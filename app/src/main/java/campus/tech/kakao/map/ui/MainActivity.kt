@@ -9,8 +9,10 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.*
@@ -53,13 +55,28 @@ class MainActivity : AppCompatActivity() {
         const val PREF_ROAD_ADDRESS_NAME = "lastRoadAddressName"
     }
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+        } else {
+            // TODO: Inform user that your app will not show notifications.
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        // 카카오 지도 초기화
+        initializeMap()
+        askNotificationPermission()
+    }
+
+    private fun initializeMap() {
+        // 카카오 지도 초기화 로직
         mapView = binding.mapView
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -105,6 +122,45 @@ class MainActivity : AppCompatActivity() {
 
         // 처음에는 BottomSheet 숨기기
         bottomSheetLayout.visibility = View.GONE
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // FCM SDK (and your app) can post notifications.
+                }
+                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS) -> {
+                    showNotificationPermissionDialog()
+                }
+                else -> {
+                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+    }
+
+    private fun showNotificationPermissionDialog() {
+        AlertDialog.Builder(this@MainActivity).apply {
+            setTitle(getString(R.string.ask_notification_permission_dialog_title))
+            setMessage(
+                String.format(
+                    "다양한 알림 소식을 받기 위해 권한을 허용하시겠어요?\n(알림 에서 %s의 알림 권한을 허용해주세요.)",
+                    getString(R.string.app_name)
+                )
+            )
+            setPositiveButton(getString(R.string.yes)) { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            }
+            setNegativeButton(getString(R.string.deny_notification_permission)) { _, _ -> }
+            show()
+        }
     }
 
     override fun onResume() {
@@ -258,4 +314,3 @@ class MainActivity : AppCompatActivity() {
         bottomSheetLayout.visibility = View.VISIBLE
     }
 }
-
