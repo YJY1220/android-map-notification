@@ -2,6 +2,7 @@ package campus.tech.kakao
 
 import android.app.Application
 import campus.tech.kakao.map.R
+import com.google.firebase.messaging.FirebaseMessaging
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
@@ -26,5 +27,14 @@ class MyApplication : Application() {
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
 
+    }
+
+    private fun initFirebaseMessaging() {
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    // Handle error
+                }
+            }
     }
 }
