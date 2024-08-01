@@ -1,9 +1,15 @@
 package campus.tech.kakao.map.ui
 
+import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -129,15 +135,15 @@ class MainActivity : AppCompatActivity() {
             when {
                 ContextCompat.checkSelfPermission(
                     this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     // FCM SDK (and your app) can post notifications.
                 }
-                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS) -> {
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
                     showNotificationPermissionDialog()
                 }
                 else -> {
-                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         }
