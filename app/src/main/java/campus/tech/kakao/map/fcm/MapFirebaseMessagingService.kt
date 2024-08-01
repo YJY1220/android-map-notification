@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.fcm
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
