@@ -1,6 +1,7 @@
 package campus.tech.kakao
 
 import android.app.Application
+import android.widget.Toast
 import campus.tech.kakao.map.R
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -33,7 +34,7 @@ class MyApplication : Application() {
         FirebaseMessaging.getInstance().subscribeToTopic("all")
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    // Handle error
+                    Toast.makeText(this, "실패하였습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
     }
