@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -61,15 +62,6 @@ class MainActivity : AppCompatActivity() {
         const val PREF_ROAD_ADDRESS_NAME = "lastRoadAddressName"
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // FCM SDK (and your app) can post notifications.
-        } else {
-            // TODO: Inform user that your app will not show notifications.
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +71,38 @@ class MainActivity : AppCompatActivity() {
 
         initializeMap()
         askNotificationPermission()
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            showToast("Notification permission granted.")
+        } else {
+            showToast("Notification permission denied.")
+        }
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    showNotificationPermissionDialog()
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun initializeMap() {
@@ -130,31 +154,13 @@ class MainActivity : AppCompatActivity() {
         bottomSheetLayout.visibility = View.GONE
     }
 
-    private fun askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // FCM SDK (and your app) can post notifications.
-                }
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    showNotificationPermissionDialog()
-                }
-                else -> {
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        }
-    }
 
     private fun showNotificationPermissionDialog() {
         AlertDialog.Builder(this@MainActivity).apply {
             setTitle(getString(R.string.ask_notification_permission_dialog_title))
             setMessage(
                 String.format(
-                    "다양한 알림 소식을 받기 위해 권한을 허용하시겠어요?\n(알림 에서 %s의 알림 권한을 허용해주세요.)",
+                    "다양한 알림 소식을 받기 위해 권한을 허용하시겠어요?",
                     getString(R.string.app_name)
                 )
             )

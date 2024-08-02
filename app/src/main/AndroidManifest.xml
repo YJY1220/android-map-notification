@@ -5,8 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- 알림 권한 (API 33 이상) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -38,7 +36,6 @@
             android:exported="true"/>
         <activity android:name=".ui.SearchActivity" />
 
-        <!-- FCM 서비스 등록 -->
         <service
             android:name=".fcm.MapFirebaseMessagingService"
             android:enabled="true"
@@ -47,12 +44,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <!-- FCM 기본 채널 설정 -->
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/fcm_default_channel_id" />
 
-        <!-- 커스텀 아이콘 및 색상 설정 -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_launcher_foreground" />

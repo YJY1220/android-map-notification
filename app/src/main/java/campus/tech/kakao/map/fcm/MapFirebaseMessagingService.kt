@@ -6,10 +6,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import campus.tech.kakao.map.R
 import campus.tech.kakao.map.ui.SplashActivity
 
 class MapFirebaseMessagingService : FirebaseMessagingService() {
@@ -40,6 +43,7 @@ class MapFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String, body: String) {
+
         val intent = Intent(this, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -59,6 +63,7 @@ class MapFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendCustomNotification(title: String, body: String) {
+
         val intent = Intent(this, SplashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -80,7 +85,6 @@ class MapFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // 서버에 토큰을 보내는 로직을 구현합니다.
     }
 
     private fun createNotificationChannel() {
@@ -97,5 +101,3 @@ class MapFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 }
-
-이 코드는 어느 패키지에 넣어야하는가?
